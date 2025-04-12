@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Job Listings</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .applicant-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        #add-listing-form {
+            display: flex; /* Enable flexbox for centering */
+            justify-content: center; /* Center the button horizontally */
+            margin-bottom: 20px;
+        }
+
+        #add-listing-form button {
+            background-color: #005408;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            white-space: nowrap; /* Prevent text wrapping on smaller screens */
+        }
+
+        #add-listing-form button:hover {
+            background-color: #007bff;
+        }
+
+
+        #add-listing-form {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        #add-listing-form button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        #add-listing-form button:hover {
+            background-color: #2980b9;
+        }
+
+        #job-listings {
+            width: 80%;
+            max-width: 900px;
+        }
+        
+
+        .job-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .job-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .job-item h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .job-item p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .job-item strong {
+            font-weight: bold;
+            color: #333;
+            margin-right: 5px;
+        }
+
+        .job-item hr {
+            border: 0;
+            height: 1px;
+            background: #eee;
+            margin: 15px 0;
+            
+        }
+    </style>
+</head>
+<body>
+    <form id="add-listing-form" method="get" action="/home">
+        <button type="submit">Home</button>
+    </form>
+    <h1>All Job Listings</h1>
+
+    <form id="add-listing-form" method="get" action="/listing/new">
+        <button type="submit">Add New Listing</button>
+    </form>
+
+    <div id="job-listings">
+        <ul>
+            <% for (let job of allJobs) { %>
+                <li class="job-item">
+                    <h3><%= job.title %></h3>
+                    <p><strong>ID:</strong> <%= job.job_id %></p>
+                    <p><strong>Company Name:</strong> <%= job.cName %></p>
+                    <p><strong>Description:</strong> <%= job.description %></p>
+                    <p><strong>Required Skills:</strong> <%= job.req_skill %></p>
+                    <p><strong>Experience:</strong> <%= job.experience %></p>
+                    <hr>
+                    <form id="add-listing-form" method="get" action="/listings/<%=job.job_id%>">
+                        <button type="submit">Eligible Candidates</button>
+                    </form>
+                </li>
+            <% } %>
+        </ul>
+    </div>
+
+</body>
+</html>

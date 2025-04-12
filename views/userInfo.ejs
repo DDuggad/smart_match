@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Relevant Companies</title>
+  <style>
+    /* Global resets & base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #eef2f5;
+      color: #333;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* Layout container */
+    .container {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #2c3e50;
+    }
+
+    /* Grid of cards */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* Individual company card */
+    .company-card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .company-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+
+    /* Card content */
+    .company-title {
+      margin: 0 0 0.5rem;
+      font-size: 1.25rem;
+      color: #1a5276;
+    }
+    .company-info {
+      font-size: 0.95rem;
+      margin: 0.5rem 0;
+    }
+    .company-info strong {
+      color: #34495e;
+    }
+
+    /* Empty states */
+    .no-data {
+      text-align: center;
+      font-style: italic;
+      color: #7f8c8d;
+      margin: 2rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Relevant Companies</h1>
+
+    <% if (data && data.length > 0) { %>
+      <% if (companies && companies.length > 0) { %>
+        <div class="cards">
+          <% data.forEach(user => { %>
+            <% companies.forEach(company => { %>
+              <% if (user.job_id == company.job_id) { %>
+                <div class="company-card">
+                  <h2 class="company-title"><%= company.title %></h2>
+                  <p class="company-name">
+                    <strong>Company Name:</strong> <%= company.cName %>
+                  </p>
+                  <p class="company-info">
+                    <strong>Job ID:</strong> <%= company.job_id %>
+                  </p>
+                  <p class="company-info">
+                    <strong>Description:</strong> <%= company.description %>
+                  </p>
+                  <p class="company-info">
+                    <strong>Fit Category:</strong> <%= user.fit_category %>
+                  </p>
+                  <p class="company-info">
+                    <strong>User AI Summary:</strong> <%= user.ai_summary %>
+                  </p>
+                </div>
+              <% } %>
+            <% }); %>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <p class="no-data">No companies available.</p>
+      <% } %>
+    <% } else { %>
+      <p class="no-data">No user data available.</p>
+    <% } %>
+  </div>
+</body>
+</html>

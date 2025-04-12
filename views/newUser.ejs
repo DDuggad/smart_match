@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Info Input</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            max-width: 90%;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <form id="add-listing-form" method="get" action="/home">
+            <button type="submit">Home</button>
+        </form>
+        <h2>Enter Candidate Info:</h2>
+        <form id="userInputForm" method="post" action="/users">
+            <div class="form-group">
+                <label for="applicant_id">Applicant ID:</label>
+                <input type="text" id="applicant_id" name="applicant_id" placeholder="Enter Applicant Identifier (max 100 characters)">
+            </div>
+
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Enter Your Name (max 50 characters)">
+            </div>
+
+            <div class="form-group">
+                <label for="resume">Resume Text:</label>
+                <textarea id="resume" name="resume" placeholder="Describe yourself (max 800 characters)" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="skills">Your Skills:</label>
+                <textarea id="skills" name="skills" placeholder="Enter Your Skills (max 500 characters)" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="experience">Your Experience:</label>
+                <textarea id="experience" name="experience" placeholder="Enter your Work Experience." rows="1"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="education">Your Educational history:</label>
+                <textarea id="education" name="education" placeholder="Describe your Educational background" rows="2"></textarea>
+            </div>
+
+            <button type="submit" id="submitBtn">Submit Applicant Details</button>
+        </form>
+    </div>
+
+    <script>
+        // Show a loading state when the form is submitted
+        document.getElementById('userInputForm').addEventListener('submit', function() {
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Submitting and running AI...';
+        });
+    </script>
+</body>
+</html>
