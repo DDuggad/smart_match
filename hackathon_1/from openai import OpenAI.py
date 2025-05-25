@@ -1,8 +1,13 @@
 from openai import OpenAI
+import os
+from dotenv import load_dotenv
 
-# Initialize the OpenAI client with your provided API key.
+# Load environment variables
+load_dotenv()
+
+# Initialize the OpenAI client with API key from environment variables
 client = OpenAI(
-    api_key="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"
+    api_key=os.getenv("OPENAI_API_KEY")
 )
 
 def generate_job_requirements(job_profile):

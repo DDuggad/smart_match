@@ -2,9 +2,14 @@ from google import genai
 from pymongo import MongoClient
 import re
 import time
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # ——— 1. Initialize Gemini client ——————————————————————————————————————————
-client = genai.Client(api_key="AIzaSyBL55AFLQa5FSAP3G9QbtlDFXzFe7jSgww")
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 # ——— 2. Connect to MongoDB —————————————————————————————————————————————
 mongo_client = MongoClient("mongodb://localhost:27017/")

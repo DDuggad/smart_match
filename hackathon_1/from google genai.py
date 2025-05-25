@@ -1,9 +1,14 @@
 from google import genai
 from pymongo import MongoClient
 import re
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # ——— 1. Configure Gemini ——————————————————————————————————————————————
-client = genai.Client(api_key="AIzaSyBL55AFLQa5FSAP3G9QbtlDFXzFe7jSgww")
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def analyze_applicant_fit(job_info, candidate_info):
     prompt = f"""

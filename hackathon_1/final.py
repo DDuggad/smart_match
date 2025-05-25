@@ -1,4 +1,9 @@
 import sys
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # force UTF‑8 output so Windows can print emojis and other Unicode
 sys.stdout.reconfigure(encoding='utf-8')
@@ -9,10 +14,12 @@ from google import genai
 from pymongo import MongoClient
 import re
 import time
-import sys
 
 # ——— 1. Initialize Gemini client ——————————————————————————————————————————
-API_KEY = "AIzaSyBL55AFLQa5FSAP3G9QbtlDFXzFe7jSgww"
+API_KEY = os.getenv("GEMINI_API_KEY")
+if not API_KEY:
+    print("Error: GEMINI_API_KEY not found in environment variables.")
+    sys.exit(1)
 client = genai.Client(api_key=API_KEY)
 
 # ——— 2. Connect to MongoDB —————————————————————————————————————————————

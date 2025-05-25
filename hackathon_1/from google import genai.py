@@ -1,7 +1,12 @@
 from google import genai
+import os
+from dotenv import load_dotenv
 
-# Initialize Gemini with API key
-client = genai.Client(api_key="AIzaSyBL55AFLQa5FSAP3G9QbtlDFXzFe7jSgww")
+# Load environment variables
+load_dotenv()
+
+# Initialize Gemini with API key from environment variables
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Function to analyze a candidate against job description
 def analyze_applicant_fit(job_info, candidate_info):
