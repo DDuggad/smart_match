@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobHunt - <%= pageTitle %>
+    </title>
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body>
+    <div class="header">
+        <a href="/home" class="logo-container">
+            <img src="https://raw.githubusercontent.com/DDuggad/smart_match/refs/heads/main/treeeeeeeeeeee.png"
+                alt="JobHunt Logo" class="logo">
+            <span class="brand-name">JobHunt</span>
+        </a>
+        <div class="nav-actions">
+            <a href="/home" class="action-button home-button">Home</a>
+            <% if(locals.backLink) { %>
+                <a href="<%= backLink %>" class="action-button">
+                    <%= backText || 'Back' %>
+                </a>
+                <% } %>
+        </div>
+    </div>

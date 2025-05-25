@@ -188,7 +188,8 @@
             padding: 20px;
             border: 1px solid #ddd;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.3s ease;
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -226,6 +227,7 @@
             color: #2c3e50;
             display: inline-block;
             width: 100px;
+            margin-right: 5px;
         }
 
         .applicant-skills {
@@ -293,12 +295,21 @@
             }
 
             .container {
-                width: 95%;
-                padding: 20px 15px;
+                width: 100%;
+                padding: 15px;
+                margin-top: 10px;
             }
 
             h1 {
-                font-size: 1.8em;
+                font-size: 1.6em;
+            }
+
+            .applicant-card {
+                padding: 15px;
+            }
+
+            .applicant-details strong {
+                width: 90px;
             }
         }
     </style>

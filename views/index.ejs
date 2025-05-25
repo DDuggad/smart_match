@@ -291,19 +291,42 @@
             .action-bar {
                 flex-direction: column;
                 align-items: center;
+                gap: 10px;
             }
 
             .job-item {
-                padding: 20px 15px;
+                padding: 15px;
             }
 
             .job-title {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
             }
 
             .job-detail strong {
-                min-width: 100px;
+                min-width: 90px;
+                font-size: 0.9rem;
             }
+
+            .job-detail {
+                font-size: 0.9rem;
+            }
+
+            .action-button {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+        }
+
+        /* Make spacing between label and content more compact */
+        .job-detail strong {
+            min-width: 100px;
+            margin-right: 5px;
+        }
+
+        /* Enhanced animations */
+        .job-item {
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.3s ease;
         }
     </style>
 </head>

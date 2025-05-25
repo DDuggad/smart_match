@@ -217,9 +217,10 @@
 
     .company-info strong {
       display: inline-block;
-      min-width: 120px;
+      min-width: 100px;
       color: #2c3e50;
       font-weight: 600;
+      margin-right: 5px;
     }
 
     .fit-category {
@@ -314,11 +315,16 @@
       }
 
       .container {
-        padding: 20px 15px;
+        padding: 15px;
+        margin: 10px;
       }
 
       h1 {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
+      }
+
+      .company-card {
+        padding: 15px;
       }
     }
   </style>
@@ -340,32 +346,44 @@
 
   <div class="main-content">
     <div class="container">
-      <h1>Relevant Companies</h1>
+      <h1>Suitable Candidates for <%= jobDetails ? jobDetails.title : 'This Position' %>
+      </h1>
 
       <% if (data && data.length> 0) { %>
         <div class="cards">
-          <% data.forEach((user, index)=> { %>
+          <% data.forEach((candidate, index)=> { %>
             <div class="company-card" style="--i: <%= index %>">
+              <h2 class="company-title">
+                <%= candidate.name %>
+              </h2>
+              <p class="company-info">
+                <strong>Skills:</strong>
+                <%= candidate.skills %>
+              </p>
+              <p class="company-info">
+                <strong>Experience:</strong>
+                <%= candidate.experience %>
+              </p>
               <p class="company-info">
                 <strong>Candidate ID:</strong>
-                <%= user.applicant_id %>
+                <%= candidate.applicant_id %>
               </p>
               <p class="company-info">
                 <strong>Fit Category:</strong>
                 <span
-                  class="fit-category <%= user.fit_category === 'Good Fit' ? 'fit-good' : (user.fit_category === 'Maybe Fit' ? 'fit-maybe' : 'fit-not') %>">
-                  <%= user.fit_category %>
+                  class="fit-category <%= candidate.fit_category === 'Good Fit' ? 'fit-good' : (candidate.fit_category === 'Maybe Fit' ? 'fit-maybe' : 'fit-not') %>">
+                  <%= candidate.fit_category %>
                 </span>
               </p>
               <p class="company-info">
                 <strong>AI Summary:</strong>
-                <%= user.ai_summary %>
+                <%= candidate.ai_summary %>
               </p>
             </div>
             <% }) %>
         </div>
         <% } else { %>
-          <p class="no-data">No relevant companies found.</p>
+          <p class="no-data">No suitable candidates found for this position.</p>
           <% } %>
     </div>
 

@@ -29,6 +29,9 @@ const jobDes = require('./models/jobDes.js');
 // Uncomment and configure if using JSON API endpoints
 // app.use(express.json());
 
+// Add static file serving
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.listen(8080, () => {
   console.log("✅ Server is running on http://localhost:8080");
 });
@@ -59,22 +62,19 @@ app.post('/listings', async (req, res) => {
   });
   await newJob.save();
 
-  // Spawn the Python script after saving
-  const pythonProcess = spawn('python', ['final.py'], { cwd: __dirname });
-
-  pythonProcess.stdout.on('data', (data) => {
-    console.log(`Python stdout: ${data.toString()}`);
+  // Start Python script in the background without waiting for it to complete
+  const pythonProcess = spawn('python', ['final.py'], {
+    cwd: __dirname,
+    detached: true,
+    stdio: ['ignore', 'ignore', 'ignore']
   });
 
-  pythonProcess.stderr.on('data', (data) => {
-    console.error(`Python stderr: ${data.toString()}`);
-  });
+  // Unref the child process so it runs independently
+  pythonProcess.unref();
 
-  pythonProcess.on('close', (code) => {
-    console.log(`Python process exited with code ${code}`);
-  });
+  console.log("Started AI matching process in background");
 
-  // Redirect back to the listings page
+  // Redirect immediately without waiting for Python to finish
   res.redirect('/listings');
 });
 
@@ -99,21 +99,19 @@ app.post('/users', async (req, res) => {
   });
   await newUser.save();
 
-  // Spawn the Python script after saving
-  const pythonProcess = spawn('python', ['final.py'], { cwd: __dirname });
-
-  pythonProcess.stdout.on('data', (data) => {
-    console.log(`Python stdout: ${data.toString()}`);
+  // Start Python script in the background without waiting for it to complete
+  const pythonProcess = spawn('python', ['final.py'], {
+    cwd: __dirname,
+    detached: true,
+    stdio: ['ignore', 'ignore', 'ignore']
   });
 
-  pythonProcess.stderr.on('data', (data) => {
-    console.error(`Python stderr: ${data.toString()}`);
-  });
+  // Unref the child process so it runs independently
+  pythonProcess.unref();
 
-  pythonProcess.on('close', (code) => {
-    console.log(`Python process exited with code ${code}`);
-  });
+  console.log("Started AI matching process in background");
 
+  // Redirect immediately without waiting for Python to finish
   res.redirect('/users');
 });
 
@@ -130,12 +128,60 @@ app.get('/users/:id', async (req, res) => {
 app.get('/listings/:id', async (req, res) => {
   const { id } = req.params;
   console.log(id);
+  // Get the matched candidates from results collection
   const data = await applicants_results.find({
     job_id: `${id}`,
     fit_category: { $in: ['Good Fit', 'Maybe Fit'] }
   });
 
+  // Fetch complete candidate information for each match
+  const candidates = [];
+  for (const match of data) {
+    const applicantInfo = await applicant.findOne({ applicant_id: match.applicant_id });
+    if (applicantInfo) {
+      candidates.push({
+        ...match.toObject(),
+        name: applicantInfo.name,
+        skills: applicantInfo.skills,
+        experience: applicantInfo.experience,
+        education: applicantInfo.education,
+        resume: applicantInfo.resume
+      });
+    }
+  }
 
+  // Get the job details
+  const jobDetails = await jobDes.findOne({ job_id: id });
 
-  res.render('companyinfo.ejs', { data });
+  res.render('companyinfo.ejs', { data: candidates, jobDetails });
+});
+
+// Add Python API proxy
+app.use('/api', async (req, res) => {
+  try {
+    // Forward request to Python FastAPI server
+    const pythonApiUrl = `http://localhost:8000/api${req.url}`;
+    const response = await axios({
+      method: req.method,
+      url: pythonApiUrl,
+      data: req.body,
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    res.status(response.status).send(response.data);
+  } catch (error) {
+    console.error('Python API error:', error.message);
+    res.status(500).send({ error: 'Failed to communicate with Python API' });
+  }
+});
+
+// Add dashboard route that uses Python API
+app.get('/dashboard', async (req, res) => {
+  try {
+    const stats = await axios.get('http://localhost:8000/api/statistics');
+    res.render('dashboard.ejs', { stats: stats.data });
+  } catch (error) {
+    console.error('Failed to get statistics:', error.message);
+    res.render('dashboard.ejs', { stats: null, error: 'Could not load statistics' });
+  }
 });
