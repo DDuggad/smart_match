@@ -1,19 +1,14 @@
+#!/usr/bin/env python3
+print("Content-Type: text/html\n")  # CGI header
+
 from google import genai
 from pymongo import MongoClient
 import re
 import time
 import sys
-import os
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
 
 # ——— 1. Initialize Gemini client ——————————————————————————————————————————
-API_KEY = os.getenv("GEMINI_API_KEY")
-if not API_KEY:
-    print("Error: GEMINI_API_KEY not found in environment variables.")
-    sys.exit(1)
+API_KEY = "AIzaSyBL55AFLQa5FSAP3G9QbtlDFXzFe7jSgww"
 client = genai.Client(api_key=API_KEY)
 
 # ——— 2. Connect to MongoDB —————————————————————————————————————————————
@@ -27,7 +22,7 @@ mongo_client = MongoClient(MONGO_URI)
 
 # Verify database exists
 if DB_NAME not in mongo_client.list_database_names():
-    print(f"Database '{DB_NAME}' not found.")
+    print(f"❌ Database '{DB_NAME}' not found.")
     sys.exit(1)
 db = mongo_client[DB_NAME]
 
@@ -35,7 +30,7 @@ db = mongo_client[DB_NAME]
 cols = db.list_collection_names()
 for col in (JOB_COL, APP_COL):
     if col not in cols:
-        print(f"Collection '{col}' not found in '{DB_NAME}'.")
+        print(f"❌ Collection '{col}' not found in '{DB_NAME}'.")
         sys.exit(1)
 
 jobs_col       = db[JOB_COL]
@@ -45,9 +40,9 @@ results_col    = db[RESULT_COL]  # will be created if missing
 # Print counts
 job_count       = jobs_col.count_documents({})
 applicant_count = applicants_col.count_documents({})
-print(f"Found {job_count} jobs and {applicant_count} applicants in '{DB_NAME}'.")
+print(f"🔢 Found {job_count} jobs and {applicant_count} applicants in '{DB_NAME}'.")
 if job_count == 0 or applicant_count == 0:
-    print("One or both source collections are empty.")
+    print("❌ One or both source collections are empty.")
     sys.exit(1)
 
 # ——— 3. Helper: call Gemini —————————————————————————————————————————————
@@ -139,10 +134,10 @@ for job in jobs:
             "applicant_id": candidate_info["Applicant ID"]
         })
         if existing:
-            print(f"Skipping Job {job_info['Job ID']} / Applicant {candidate_info['Applicant ID']} (already exists)")
+            print(f"→ Skipping Job {job_info['Job ID']} / Applicant {candidate_info['Applicant ID']} (already exists)")
             continue
 
-        print(f"Processing Job {job_info['Job ID']} / Applicant {candidate_info['Applicant ID']}...")
+        print(f"▶ Processing Job {job_info['Job ID']} / Applicant {candidate_info['Applicant ID']}...")
         raw = analyze_applicant_fit(job_info, candidate_info)
         if not raw:
             continue
@@ -153,11 +148,11 @@ for job in jobs:
 
         try:
             res = results_col.insert_one(parsed)
-            print(f" Inserted _id={res.inserted_id}\n")
+            print(f"   ✔ Inserted _id={res.inserted_id}\n")
             inserted += 1
         except Exception as e:
-            print(f"[Error] MongoDB insert failed: {e}\n")
+            print(f"   [Error] MongoDB insert failed: {e}\n")
 
         time.sleep(sleep_interval)
 
-print(f"Done. Total new records inserted: {inserted}")
+print(f"✅ Done. Total new records inserted: {inserted}")

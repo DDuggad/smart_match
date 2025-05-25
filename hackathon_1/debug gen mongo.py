@@ -3,51 +3,52 @@ from pymongo import MongoClient
 import re
 import time
 import sys
-import os
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
 
 # ——— 1. Initialize Gemini client ——————————————————————————————————————————
-API_KEY = os.getenv("GEMINI_API_KEY")
-if not API_KEY:
-    print("Error: GEMINI_API_KEY not found in environment variables.")
-    sys.exit(1)
-client = genai.Client(api_key=API_KEY)
+client = genai.Client(api_key="AIzaSyBL55AFLQa5FSAP3G9QbtlDFXzFe7jSgww")
 
 # ——— 2. Connect to MongoDB —————————————————————————————————————————————
-MONGO_URI = "mongodb://localhost:27017/"
+mongo_client = MongoClient("mongodb://localhost:27017/")
+
+# 2a) List all databases
+dbs = mongo_client.list_database_names()
+print("🔍 Databases on server:", dbs)
+
+# 2b) Select your database
 DB_NAME = "smartMatch"
-JOB_COL    = "jobdes"
-APP_COL    = "applicants"
-RESULT_COL = "applicants_results"
-
-mongo_client = MongoClient(MONGO_URI)
-
-# Verify database exists
-if DB_NAME not in mongo_client.list_database_names():
-    print(f"Database '{DB_NAME}' not found.")
+if DB_NAME not in dbs:
+    print(f"❌ Database '{DB_NAME}' not found. Check your MongoDB instance.")
     sys.exit(1)
+
 db = mongo_client[DB_NAME]
 
-# Verify collections exist
+# 2c) List collections in that database
 cols = db.list_collection_names()
+print(f"🔍 Collections in '{DB_NAME}':", cols)
+
+# Expected collection names
+JOB_COL = "jobDes"
+APP_COL = "applicant"
+RESULT_COL = "applicants_results"
+
+# Verify they exist
 for col in (JOB_COL, APP_COL):
     if col not in cols:
-        print(f"Collection '{col}' not found in '{DB_NAME}'.")
+        print(f"❌ Collection '{col}' not found in '{DB_NAME}'.")
         sys.exit(1)
 
 jobs_col       = db[JOB_COL]
 applicants_col = db[APP_COL]
-results_col    = db[RESULT_COL]  # will be created if missing
+results_col    = db[RESULT_COL]  # we'll create this if it doesn't exist
 
-# Print counts
+# 2d) Print document counts
 job_count       = jobs_col.count_documents({})
 applicant_count = applicants_col.count_documents({})
-print(f"Found {job_count} jobs and {applicant_count} applicants in '{DB_NAME}'.")
+print(f"🔢 '{JOB_COL}' has {job_count} documents.")
+print(f"🔢 '{APP_COL}' has {applicant_count} documents.")
+
 if job_count == 0 or applicant_count == 0:
-    print("One or both source collections are empty.")
+    print("❌ One or both collections are empty. Populate them before running.")
     sys.exit(1)
 
 # ——— 3. Helper: call Gemini —————————————————————————————————————————————
@@ -87,7 +88,7 @@ Education: {candidate_info['Education']}
         print(f"[Error] Gemini API failed for Job {job_info['Job ID']} / Applicant {candidate_info['Applicant ID']}: {e}")
         return None
 
-# ——— 4. Helper: parse Gemini’s response ————————————————————————————————————
+# ——— 4. Helper: parse Gemini’s structured response ————————————————————————
 def parse_response(text):
     pattern = (
         r"Job ID:\s*(.+)\n"
@@ -109,8 +110,7 @@ def parse_response(text):
 # ——— 5. Main processing loop —————————————————————————————————————————————
 jobs       = list(jobs_col.find())
 applicants = list(applicants_col.find())
-inserted   = 0
-sleep_interval = 60 / 14  # ~4.29 seconds per request to stay under 14 rpm
+inserted = 0
 
 for job in jobs:
     job_info = {
@@ -133,16 +133,7 @@ for job in jobs:
             "Education":     applicant.get("education")
         }
 
-        # Skip if already processed
-        existing = results_col.find_one({
-            "job_id": job_info["Job ID"],
-            "applicant_id": candidate_info["Applicant ID"]
-        })
-        if existing:
-            print(f"Skipping Job {job_info['Job ID']} / Applicant {candidate_info['Applicant ID']} (already exists)")
-            continue
-
-        print(f"Processing Job {job_info['Job ID']} / Applicant {candidate_info['Applicant ID']}...")
+        print(f"▶ Processing Job {job_info['Job ID']} / Applicant {candidate_info['Applicant ID']}...")
         raw = analyze_applicant_fit(job_info, candidate_info)
         if not raw:
             continue
@@ -153,11 +144,12 @@ for job in jobs:
 
         try:
             res = results_col.insert_one(parsed)
-            print(f" Inserted _id={res.inserted_id}\n")
+            print(f"   ✔ Inserted _id={res.inserted_id}\n")
             inserted += 1
         except Exception as e:
-            print(f"[Error] MongoDB insert failed: {e}\n")
+            print(f"   [Error] MongoDB insert failed: {e}\n")
 
-        time.sleep(sleep_interval)
+        # throttle to respect rate limits
+        time.sleep(1)
 
-print(f"Done. Total new records inserted: {inserted}")
+print(f"✅ Done. Total inserted: {inserted}")
