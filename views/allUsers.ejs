@@ -1,20 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Applicant Profiles</title>
+    <title>JobHunt - Applicant Profiles</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f0f2f0, #e0e5e0);
-            color: #333;
+        /* Global styles */
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f8ff, #e0e5e0);
+            color: #2c3e50;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header styling */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px 20px;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            min-height: 100vh;
+            z-index: 100;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-container::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #c2d721;
+            transition: width 0.3s ease;
+        }
+
+        .logo-container:hover::after {
+            width: 100%;
+        }
+
+        .logo:hover {
+            transform: rotate(5deg);
+        }
+
+        .logo {
+            width: 40px;
+            height: auto;
+            margin-right: 10px;
+        }
+
+        .brand-name {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #258fbd;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        /* Main container */
+        .main-container {
+            margin-top: 80px;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .container {
@@ -22,9 +98,13 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
             padding: 30px;
-            width: 85%;
-            max-width: 960px;
+            width: 90%;
+            max-width: 1200px;
             backdrop-filter: blur(10px);
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+            opacity: 0;
+            transform: translateY(20px);
         }
 
         header {
@@ -33,168 +113,297 @@
         }
 
         h1 {
-            color: #007bff;
+            color: #258fbd;
             margin-bottom: 15px;
+            font-size: 2.2em;
+            animation: fadeInDown 0.8s ease;
         }
 
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Button styling */
+        .action-button {
+            background-color: #258fbd;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover::before {
+            left: 100%;
+        }
+
+        .action-button:hover {
+            background-color: #1a6b9b;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .home-button {
+            background-color: #c2d721;
+        }
+
+        /* Applicant cards */
         .applicant-list {
             list-style: none;
             padding: 0;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 25px;
-        }
-        #add-listing-form {
-            display: flex; /* Enable flexbox for centering */
-            justify-content: center; /* Center the button horizontally */
-            margin-bottom: 20px;
-        }
-
-        #add-listing-form button {
-            background-color: #005408;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-            white-space: nowrap; /* Prevent text wrapping on smaller screens */
-        }
-
-        #add-listing-form button:hover {
-            background-color: #007bff;
         }
 
         .applicant-card {
             background-color: #fff;
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 20px;
             border: 1px solid #ddd;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .applicant-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+            transform: translateY(-8px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
         .applicant-name {
             color: #28a745;
             margin-top: 0;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .applicant-details {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .applicant-details p {
-            margin-bottom: 8px;
-            font-size: 0.85rem;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
             color: #555;
+            line-height: 1.4;
         }
 
         .applicant-details strong {
             font-weight: bold;
-            color: #333;
+            color: #2c3e50;
+            display: inline-block;
+            width: 100px;
         }
 
         .applicant-skills {
-            color: #0056b3;
+            color: #258fbd;
+            font-weight: 500;
         }
 
         .no-applicants {
             text-align: center;
             color: #777;
             font-style: italic;
+            margin: 40px 0;
+            font-size: 1.2em;
+        }
+
+        .btn-action {
+            margin-top: auto;
+            background-color: #258fbd;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-action:hover {
+            background-color: #1a6b9b;
+            transform: translateY(-3px);
         }
 
         footer {
             text-align: center;
-            margin-top: 30px;
-            color: #777;
-            font-size: 0.8rem;
+            margin-top: 40px;
+            color: #666;
+            font-size: 0.9rem;
+            padding: 20px 0;
         }
 
-        /* Background Pattern */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('data:image/svg+xml,%3Csvg width="42" height="42" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg"%3E%3Cg id="Page-1" fill="none" fill-rule="evenodd"%3E%3Cg id="noise" fill="%23e3e3e3" fill-opacity="0.08"%3E%3Cpath d="M0 0h42v42H0z"/%3E%3Cpath d="M6.75 8.25c0-.966.783-1.75 1.75-1.75.966 0 1.75.784 1.75 1.75 0 .966-.784 1.75-1.75 1.75-.967 0-1.75-.784-1.75-1.75zm19.5 10c0-.966.784-1.75 1.75-1.75.966 0 1.75.784 1.75 1.75 0 .966-.784 1.75-1.75 1.75-.967 0-1.75-.784-1.75-1.75zm-13 14.5c0-.967.783-1.75 1.75-1.75.967 0 1.75.783 1.75 1.75 0 .967-.783 1.75-1.75 1.75-.967 0-1.75-.783-1.75-1.75zm16.5-21.5c0-.966.784-1.75 1.75-1.75.966 0 1.75.784 1.75 1.75 0 .966-.784 1.75-1.75 1.75-.967 0-1.75-.784-1.75-1.75zm-23 15c0-.967.783-1.75 1.75-1.75.967 0 1.75.783 1.75 1.75 0 .967-.783 1.75-1.75 1.75-.967 0-1.75-.783-1.75-1.75zm26.5-11.5c0-.966.784-1.75 1.75-1.75.966 0 1.75.784 1.75 1.75 0 .966-.784 1.75-1.75 1.75-.967 0-1.75-.784-1.75-1.75zM11.5 26.5c0-.967.783-1.75 1.75-1.75.967 0 1.75.783 1.75 1.75 0 .967-.783 1.75-1.75 1.75-.967 0-1.75-.783-1.75-1.75zm18-18c0-.966.784-1.75 1.75-1.75.966 0 1.75.784 1.75 1.75 0 .966-.784 1.75-1.75 1.75-.967 0-1.75-.784-1.75-1.75zM17 37c0-.967.783-1.75 1.75-1.75.967 0 1.75.783 1.75 1.75 0 .967-.783 1.75-1.75 1.75-.967 0-1.75-.783-1.75-1.75z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
-            opacity: 0.8;
-            z-index: -1;
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .applicant-details > form {
-            display: flex;
-            justify-content: center;
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
-        .applicant-details > form button{
-            margin-left: 0; /* Remove any potential left margin */
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .applicant-list {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                width: 95%;
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
         }
-        
     </style>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
 </head>
+
 <body>
-    <div class="container">
-       
-        <form id="add-listing-form" method="get" action="/home">
-            <button type="submit">Home</button>
-        </form>
-        <header>
-            <h1>Applicant Profiles</h1>
-        </header>
-        <form id="add-listing-form" method="get" action="/users/new">
-            <button type="submit">Add New Applicant</button>
-        </form>
-        
-        <main>
-            <ul class="applicant-list">
-                <% if (users && users.length > 0) { %>
-                    <% users.forEach(user => { %>
-                        <li class="applicant-card" data-applicant-id="<%= user.applicant_id %>">
-                            <h2 class="applicant-name"><%= user.name %></h2>
-                            <div class="applicant-details">
-                               
-                                <p><strong>Resume:</strong> <span class="applicant-resume"><%= user.resume %></span></p>
-                                <p><strong>Skills:</strong> <span class="applicant-skills"><%= user.skills %></span></p>
-                                <p><strong>Experience:</strong> <span class="applicant-experience"><%= user.experience %></span></p>
-                                <p><strong>Education:</strong> <span class="applicant-education"><%= user.education %></span></p>
-                                <form method="get" , action="/users/<%=user.applicant_id%>">
-                                    <button class="btn btn-secondary">Suitable Companies</button>
-                                </form>
-                            </div>
-                        </li>
-                    <% }); %>
-                <% } else { %>
-                    <li class="no-applicants">No applicants found.</li>
-                <% } %>
-            </ul>
-        </main>
-        <footer>
-            <p> Subscribe to INFINICERS.</p>
-        </footer>
+    <!-- Header with Logo - make clickable -->
+    <div class="header">
+        <a href="/home" class="logo-container">
+            <img src="https://raw.githubusercontent.com/DDuggad/smart_match/refs/heads/main/treeeeeeeeeeee.png"
+                alt="JobHunt Logo" class="logo">
+            <span class="brand-name">JobHunt</span>
+        </a>
+        <div class="nav-actions">
+            <a href="/home" class="action-button home-button">Home</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="container">
+            <header>
+                <h1>Applicant Profiles</h1>
+                <a href="/users/new" class="action-button">Add New Applicant</a>
+            </header>
+
+            <main>
+                <ul class="applicant-list">
+                    <% if (users && users.length> 0) { %>
+                        <% users.forEach(user=> { %>
+                            <li class="applicant-card" data-applicant-id="<%= user.applicant_id %>">
+                                <h2 class="applicant-name">
+                                    <%= user.name %>
+                                </h2>
+                                <div class="applicant-details">
+                                    <p><strong>Resume:</strong> <span class="applicant-resume">
+                                            <%= user.resume %>
+                                        </span></p>
+                                    <p><strong>Skills:</strong> <span class="applicant-skills">
+                                            <%= user.skills %>
+                                        </span></p>
+                                    <p><strong>Experience:</strong> <span class="applicant-experience">
+                                            <%= user.experience %>
+                                        </span></p>
+                                    <p><strong>Education:</strong> <span class="applicant-education">
+                                            <%= user.education %>
+                                        </span></p>
+                                    <form method="get" action="/users/<%=user.applicant_id%>">
+                                        <button class="btn btn-primary btn-action">Suitable Companies</button>
+                                    </form>
+                                </div>
+                            </li>
+                            <% }); %>
+                                <% } else { %>
+                                    <li class="no-applicants">No applicants found.</li>
+                                    <% } %>
+                </ul>
+            </main>
+            <footer>
+                <p>Subscribe to INFINICERS.</p>
+            </footer>
+        </div>
     </div>
 
     <script>
-        // Basic JavaScript for potential interactivity (no "View Details" button now)
+        // Enhanced animation effects
         document.addEventListener('DOMContentLoaded', () => {
             const applicantCards = document.querySelectorAll('.applicant-card');
-            applicantCards.forEach(card => {
-                card.addEventListener('mouseenter', () => {
-                    card.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.2)';
-                    card.style.transform = 'translateY(-3px)';
-                });
-                card.addEventListener('mouseleave', () => {
-                    card.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+            const container = document.querySelector('.container');
+
+            // Container entrance animation
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 200);
+
+            // Staggered animation on page load
+            applicantCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+
+                setTimeout(() => {
+                    card.style.opacity = '1';
                     card.style.transform = 'translateY(0)';
-                });
+                }, 300 + (100 * index));
+            });
+
+            // Logo interaction
+            const logo = document.querySelector('.logo');
+            logo.addEventListener('mouseenter', () => {
+                logo.style.transform = 'rotate(5deg) scale(1.1)';
+            });
+
+            logo.addEventListener('mouseleave', () => {
+                logo.style.transform = 'rotate(0) scale(1)';
+            });
+
+            // Logo click handler
+            document.querySelector('.logo-container').addEventListener('click', () => {
+                window.location.href = '/home';
             });
         });
-
     </script>
 </body>
+
 </html>

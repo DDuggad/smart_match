@@ -6,13 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JobHunt</title>
     <style>
+        /* Global styles */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
         /* General body styling */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             background-color: #f0f8ff;
-            /* Light blue background */
             text-align: center;
-            /* Center all text */
             padding: 0;
             margin: 0;
             display: flex;
@@ -20,39 +28,97 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            /* Full viewport height */
+            color: #2c3e50;
         }
 
         /* Header styling */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo {
+            width: 50px;
+            height: auto;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #c2d721;
+            transition: width 0.3s ease;
+        }
+
+        .logo-container:hover::after {
+            width: 100%;
+        }
+
+        .logo:hover {
+            transform: rotate(5deg);
+        }
+
+        .brand-name {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #258fbd;
+        }
+
+        /* Main content area */
+        .main-content {
+            margin-top: 100px;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
         h1 {
             color: #2c3e50;
-            /* Dark blue color */
-            font-size: 3em;
-            /* Larger and more eye-catching */
-            margin-top: 20px;
+            font-size: 2.5em;
+            margin: 30px 0;
+            animation: slideUp 0.8s ease-in-out;
         }
 
-        /* Paragraph styling */
-        p {
-            font-size: 5.8em;
+        p.title {
+            font-size: 3.5em;
             color: #000000;
-            /* Teal color */
             margin-top: 20px;
-        }
-
-        /* Image styling */
-        img {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 150px;
-            /* Adjust image size */
-            height: auto;
+            font-weight: bold;
+            animation: slideDown 0.8s ease-in-out;
         }
 
         /* Button container */
         .button-container {
-            margin-top: 30px;
+            margin-top: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            animation: fadeIn 1.2s ease-in-out;
         }
 
         /* Style for buttons */
@@ -61,63 +127,180 @@
             font-size: 1.5em;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            margin: 10px;
             width: 250px;
-            /* Width for the buttons */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
         /* Apply Now button style */
         .apply-now {
             background-color: #c2d721;
-            /* Light orange */
         }
 
         /* Hiring button style */
         .hiring {
             background-color: #258fbd;
-            /* Light green */
         }
 
         /* Footer style */
         footer {
-            margin-top: 40px;
-            font-size: 1.2em;
-            color: #333;
+            margin-top: 60px;
+            padding: 20px;
+            width: 100%;
+            background-color: #258fbd;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1.4s ease-in-out;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 1.2rem;
         }
 
         /* Keep Shining text */
         p.heart {
             font-size: 1.5em;
             color: #e74c3c;
+            margin-top: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            p.title {
+                font-size: 2.5em;
+            }
+
+            .button-container {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
 
 <body>
-    <!-- Logo Image - Updated path to correctly reference the logo in views folder -->
-    <img src="./treeeeeeeeeeee.png" alt="JobHunt Logo">
-
-    <!-- Main Content -->
-    <p><b>JobHunt</b></p>
-    <h1>Start your professional journey today!!!</h1>
-
-    <!-- Button Container -->
-    <div class="button-container">
-        <form method="get" , action="/users">
-            <button class="button apply-now">For Candidates</button>
-        </form>
-        <form method="get" action="/listings">
-            <button class="button hiring">For Employers</button>
-        </form>
+    <!-- Header with Logo -->
+    <div class="header">
+        <a href="/home" class="logo-container">
+            <img src="https://raw.githubusercontent.com/DDuggad/smart_match/refs/heads/main/treeeeeeeeeeee.png"
+                alt="JobHunt Logo" class="logo">
+            <span class="brand-name">JobHunt</span>
+        </a>
     </div>
 
-    <!-- Footer -->
-    <footer>Thank you for visiting our Website</footer>
+    <!-- Main Content -->
+    <div class="main-content">
+        <p class="title">JobHunt</p>
+        <h1>Start your professional journey today!!!</h1>
 
-    <!-- Keep Shining message -->
-    <p class="heart">Keep Shining &hearts;</p>
+        <!-- Button Container -->
+        <div class="button-container">
+            <form method="get" action="/users">
+                <button class="button apply-now">For Candidates</button>
+            </form>
+            <form method="get" action="/listings">
+                <button class="button hiring">For Employers</button>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>Thank you for visiting JobHunt - Where careers and opportunities meet!</p>
+        </footer>
+
+        <!-- Keep Shining message -->
+        <p class="heart">Keep Shining &hearts;</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Additional animation on page load
+            const content = document.querySelector('.main-content');
+            content.style.opacity = '0';
+
+            setTimeout(() => {
+                content.style.opacity = '1';
+            }, 100);
+
+            // Enhanced logo interaction
+            const logo = document.querySelector('.logo');
+            logo.addEventListener('mouseenter', () => {
+                logo.style.transform = 'rotate(5deg) scale(1.1)';
+            });
+
+            logo.addEventListener('mouseleave', () => {
+                logo.style.transform = 'rotate(0) scale(1)';
+            });
+
+            // Logo click handler (already implemented)
+            document.querySelector('.logo-container').addEventListener('click', () => {
+                window.location.href = '/home';
+            });
+        });
+    </script>
 </body>
 
 </html>

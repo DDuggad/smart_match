@@ -13,9 +13,9 @@ const { spawn } = require('child_process');
 app.use(bodyParser.urlencoded({ extended: false }));
 
 main().then(res => {
-    console.log(`database connected`);
+  console.log(`database connected`);
 })
-.catch(err => console.log(err));
+  .catch(err => console.log(err));
 
 async function main() {
   await mongoose.connect('mongodb://127.0.0.1:27017/smartMatch');
@@ -34,7 +34,7 @@ app.listen(8080, () => {
 });
 
 app.get('/home', (req, res) => {
-    res.render(`home.ejs`);
+  res.render(`home.ejs`);
 });
 
 app.get('/listings', async (req, res) => {
@@ -84,7 +84,7 @@ app.get('/users', async (req, res) => {
 });
 
 app.get('/users/new', (req, res) => {
-  res.render('newUser.ejs');       
+  res.render('newUser.ejs');
 });
 
 app.post('/users', async (req, res) => {
@@ -98,6 +98,22 @@ app.post('/users', async (req, res) => {
     education: userData.education
   });
   await newUser.save();
+
+  // Spawn the Python script after saving
+  const pythonProcess = spawn('python', ['final.py'], { cwd: __dirname });
+
+  pythonProcess.stdout.on('data', (data) => {
+    console.log(`Python stdout: ${data.toString()}`);
+  });
+
+  pythonProcess.stderr.on('data', (data) => {
+    console.error(`Python stderr: ${data.toString()}`);
+  });
+
+  pythonProcess.on('close', (code) => {
+    console.log(`Python process exited with code ${code}`);
+  });
+
   res.redirect('/users');
 });
 
@@ -118,8 +134,8 @@ app.get('/listings/:id', async (req, res) => {
     job_id: `${id}`,
     fit_category: { $in: ['Good Fit', 'Maybe Fit'] }
   });
-  
 
-  
+
+
   res.render('companyinfo.ejs', { data });
 });
